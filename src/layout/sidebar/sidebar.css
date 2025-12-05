@@ -1,0 +1,268 @@
+/* ============================
+    GLOBAL COLORS & SETTINGS
+=============================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+body, html, #root, * {
+    font-family: "Inter", sans-serif !important;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #eef1f6;
+    --bg-dark: #0f0f11;
+  
+    --card: #ffffff;
+    --card-dark: #1c1c1e;
+  
+    --border: rgba(0,0,0,0.06);
+    --border-dark: rgba(255,255,255,0.08);
+  
+    --text: #1f2937;
+    --text-dark: #f3f4f6;
+  
+    --primary: #3b82f6;
+    --accent: #8b5cf6;
+    --cyan: #06b6d4;
+  
+    --transition: .25s ease;
+    --radius: 12px;
+    --shadow-card: 0 4px 16px rgba(0,0,0,0.07);
+  }
+  
+  /* ============================
+          LAYOUT
+  =============================== */
+  
+  .layout-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* ============================
+          SIDEBAR FIXED + POLISHED
+  =============================== */
+  
+  .sidebar {
+    width: 210px;
+    height: 100vh;
+    background: linear-gradient(180deg, #0f172a, #1e293b 40%, #0f172a);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    transition: width var(--transition);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .sidebar.collapsed {
+    width: 70px;
+  }
+  
+  .sidebar-header {
+    justify-content: center;
+    height: 58px;
+    padding: 0 14px;
+    background: linear-gradient(135deg,#1e40af,#3b82f6);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .sidebar-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: opacity var(--transition);
+  }
+  
+  .sidebar.collapsed .sidebar-title {
+    opacity: 0;
+    width: 0;
+    pointer-events: none;
+  }
+  
+  .collapse-btn {
+    border: none;
+    background: none;
+    color: #f1f5f9;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* ============================
+        MENU FIX (ALIGNMENT & ICONS)
+  =============================== */
+  
+  .sidebar-menu {
+    background: transparent !important;
+    margin-top: 8px;
+  }
+  
+  .ant-menu {
+    background: transparent !important;
+    border-right: none !important;
+  }
+  
+  .ant-menu-item {
+    background: transparent !important;
+    height: 42px !important;
+    margin: 4px 8px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #e2e8f0 !important;
+    font-size: 14px;
+    font-weight: 500;
+    padding-left: 12px !important;
+    width: calc(100% - 16px) !important;
+    box-sizing: border-box !important;
+  }
+  
+  .ant-menu-item:hover {
+    background: rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+  }
+  
+  .ant-menu-item-selected {
+    background: linear-gradient(135deg,var(--primary),var(--accent)) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+  }
+  
+  .ant-menu-item-selected .ant-menu-item-icon {
+    color: #ffffff !important;
+  }
+  
+  /* ============================
+        ICON REFINEMENT
+  =============================== */
+  
+  .ant-menu-item-icon {
+    width: 22px !important;
+    font-size: 18px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 10px !important;
+    color: #cbd5e1 !important;
+  }
+  
+  /* ============================
+        COLLAPSED FIXES
+  =============================== */
+  
+  .sidebar.collapsed .ant-menu-item {
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 6px 0 !important;
+    width: 100% !important;
+  }
+  
+  .sidebar.collapsed .ant-menu-item-icon {
+    margin: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .sidebar.collapsed .ant-menu-item > span:not(.ant-menu-item-icon) {
+    display: none !important;
+  }
+  
+  .sidebar.collapsed .ant-menu-item:hover {
+    background: rgba(255,255,255,0.15) !important;
+  }
+  
+  /* ============================
+        TOPBAR
+  =============================== */
+  
+  .topbar {
+    height: 60px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .layout-content {
+    flex: 1;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  
+  .page-content {
+    padding: 24px 28px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  
+  /* Card Hover */
+  .page-content .ant-card {
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: var(--shadow-card);
+    border: none;
+  }
+  
+  .page-content .ant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  }
+
+  .topbar-title {
+    padding: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-left: 8px;
+}
+span.toggle-label {
+    padding: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-left: 8px;
+}
+.chart-card {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(245, 247, 255, 0.88) 100%
+      );
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 22px;
+    border: 1px solid rgba(120, 120, 120, 0.12);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  
+  .chart-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.10),
+      0 10px 32px rgba(0, 0, 0, 0.08);
+  }
+
+.new-styles{
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+}  
