@@ -1,43 +1,46 @@
 import type { AppDispatch } from "@/redux/store";
 import {
-    fetchOrdersFailure,
+  fetchOrdersFailure,
   fetchOrdersRequest,
   fetchOrdersSuccess,
+  clearOrders,
 } from "../actions/orderActions";
-
-import MOCK_ORDERS from "@/redux/order/mock/orders.mock.json";
-import { USE_MOCK } from "@/config/env";
 import { message } from "antd";
+import { USE_MOCK } from "@/config/env";
+
+let isFetching = false;
+
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export const fetchOrders = () => {
   return async (dispatch: AppDispatch) => {
     dispatch(fetchOrdersRequest());
+    if (isFetching) return;
+
+    isFetching = true;
+    dispatch(clearOrders());
 
     try {
-      let data;
+      let data = [];
 
       if (USE_MOCK) {
-        await new Promise((r) => setTimeout(r, 300));
-        data = MOCK_ORDERS;
+        const res = await fetch("/mock/orders.json");
+        data = await res.json();
       } else {
         const res = await fetch("http://localhost:8080/orders");
-
-        if (!res.ok) {
-          message.error("API mode enabled but server not responding.");
-          dispatch(fetchOrdersSuccess([]));
-          return;
-        }
-
+        if (!res.ok) throw new Error("API server not responding");
         data = await res.json();
       }
 
+      await delay(300);
+
       dispatch(fetchOrdersSuccess(data));
-    } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error occurred";
-        dispatch(fetchOrdersFailure(errorMessage));
-        dispatch(fetchOrdersSuccess([]));
-        message.error(`API Error: ${errorMessage}`);
-      }
+
+    } catch (error: any) {
+      dispatch(fetchOrdersFailure(error?.message || "Unknown error"));
+      message.error("API Error: " + error?.message);
+    } finally {
+      isFetching = false;
+    }
   };
 };

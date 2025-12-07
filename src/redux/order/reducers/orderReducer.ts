@@ -2,6 +2,7 @@ import {
     FETCH_ORDERS_REQUEST,
     FETCH_ORDERS_SUCCESS,
     FETCH_ORDERS_FAILURE,
+    CLEAR_ORDERS,
     type OrdersState,
   } from "../types/orderTypes";
   
@@ -31,6 +32,11 @@ import {
             loading: false, 
             error: action.payload 
         };
+      case CLEAR_ORDERS:
+          return {
+            ...state,
+            data: [],
+          };
       default:
         return state;
     }
