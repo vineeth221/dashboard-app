@@ -1,40 +1,25 @@
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "@/redux/store";
-import { fetchOrders } from "@/redux/order/thunks/orderThunks";
-import { toggleMockMode, USE_MOCK } from "@/config/env";
-import { Switch } from "antd";
-import { useState, useEffect } from "react";
-import "../sidebar/Sidebar";
+import {
+  SearchOutlined,
+  BellOutlined,
+  CalendarOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 
 export default function Header() {
-  const dispatch = useDispatch<AppDispatch>();
-  const [mockMode, setMockMode] = useState(USE_MOCK);
-
-  useEffect(() => {
-    setMockMode(USE_MOCK);
-  }, []);
-
-  const onToggle = () => {
-    const newValue = !mockMode;
-    toggleMockMode(newValue); 
-    setMockMode(newValue);
-    dispatch(fetchOrders());
-  };
-
   return (
     <header className="topbar">
-      <div className="topbar-title">My Dashboard</div>
+      <div className="search-box">
+        <SearchOutlined />
+        <input placeholder="Search anything..." />
+      </div>
 
       <div className="topbar-actions">
-        <span className="toggle-label">
-          {mockMode ? "Mock" : "API"} Mode
-        </span>
-
-        <Switch
-          checked={mockMode}
-          onChange={onToggle}
-          className="toggle-switch"
-        />
+        <button className="date-btn">
+          <CalendarOutlined /> May 27 - Jun 27, 2025
+        </button>
+        <button className="round-btn"><SettingOutlined /></button>
+        <button className="round-btn"><BellOutlined /></button>
+        <div className="user-photo">CV</div>
       </div>
     </header>
   );

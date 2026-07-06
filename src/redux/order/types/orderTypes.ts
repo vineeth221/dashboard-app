@@ -5,20 +5,37 @@ export const CLEAR_ORDERS = "CLEAR_ORDERS";
 
 export interface Order {
   id: string;
-  customer: string;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+
+  vendor: string;
+
+  status:
+    | "Paid"
+    | "Pending"
+    | "Overdue"
+    | "Duplicate Risk"
+    | "Processing";
+
   amount: number;
+
   paymentMode: string;
-  date: string;
+
+  invoiceDate: string;
+
+  dueDate: string;
+
   city?: string;
+
   state?: string;
-  phone?: string;
+
   email?: string;
-  product?: string;
+
   category?: string;
-  quantity?: number;
-  deliveryPartner?: string;
-  rating?: number;
+
+  invoiceType?: string;
+
+  riskScore?: number;
+
+  duplicateProbability?: number;
 }
 
 export interface OrdersState {

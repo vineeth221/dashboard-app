@@ -1,42 +1,38 @@
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const COLORS = ["#1890ff", "#52c41a", "#faad14", "#ff4d4f", "#722ed1"];
+const data = [
+  { name: "Paid", value: 850, color: "#10b981" },
+  { name: "Pending", value: 263, color: "#f59e0b" },
+  { name: "Overdue", value: 84, color: "#ef477a" },
+  { name: "Draft", value: 51, color: "#8b5cf6" },
+];
 
 export default function OrdersPieChart() {
-  const orders = useSelector((state: RootState) => state.order.data);
-
-  const statusCount: Record<string, number> = {};
-  for (const o of orders) {
-    statusCount[o.status] = (statusCount[o.status] || 0) + 1;
-  }
-
-  const chartData = Object.keys(statusCount).map((key) => ({
-    name: key,
-    value: statusCount[key],
-  }));
-
   return (
-    <div className="chart-card">
-      <h3 className="text-xl font-semibold mb-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-transparent bg-clip-text">
-        Orders by Status
-      </h3>
-
-      <p className="text-gray-500 text-sm mb-4">
-        Distribution of all orders based on their current fulfillment stage.
-      </p>
-
-      <ResponsiveContainer width="100%" height={280}>
+    <div className="donut-wrap">
+      <ResponsiveContainer width="55%" height={260}>
         <PieChart>
-          <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={110} label>
-            {chartData.map((_, idx) => (
-              <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
-            ))}
+          <Pie data={data} innerRadius={68} outerRadius={96} dataKey="value" paddingAngle={1}>
+            {data.map((d) => <Cell key={d.name} fill={d.color} />)}
           </Pie>
-          <Tooltip />
+          <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #273452", color: "#fff" }} />
         </PieChart>
       </ResponsiveContainer>
+
+      <div className="donut-center">
+        <h2>1,248</h2>
+        <p>Total</p>
+      </div>
+
+      <div className="legend-list">
+        {data.map((d) => (
+          <div key={d.name}>
+            <span style={{ background: d.color }} />
+            <b>{d.name}</b>
+            <p>{Math.round((d.value / 1248) * 100)}% ({d.value})</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

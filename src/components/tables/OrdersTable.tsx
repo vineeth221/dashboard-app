@@ -1,68 +1,205 @@
 import { useMemo, useState } from "react";
-import { Table, Input, Button, Modal, Checkbox, Divider } from "antd";
+import {
+  Table,
+  Input,
+  Button,
+  Modal,
+  Checkbox,
+  Divider,
+  Tag,
+} from "antd";
+
 import type { ColumnsType, TableProps } from "antd/es/table";
+
 import { SettingOutlined } from "@ant-design/icons";
+
 import { useSelector } from "react-redux";
+
 import type { RootState } from "@/redux/store";
 import type { Order } from "@/redux/order/types/orderTypes";
 
 export default function OrdersTable() {
-  const { data: orders, loading } = useSelector((state: RootState) => state.order);
+  const { data: invoices, loading } = useSelector(
+    (state: RootState) => state.order
+  );
 
   const allColumns: ColumnsType<Order> = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Customer", dataIndex: "customer", key: "customer" },
-    { title: "Status", dataIndex: "status", key: "status" },
+    {
+      title: "Invoice ID",
+      dataIndex: "id",
+      key: "id",
+    },
+
+    {
+      title: "Vendor",
+      dataIndex: "vendor",
+      key: "vendor",
+    },
+
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+
+      render: (status: string) => {
+        const colorMap: Record<string, string> = {
+          Paid: "green",
+          Pending: "orange",
+          Overdue: "red",
+          Processing: "blue",
+          "Duplicate Risk": "purple",
+        };
+
+        return (
+          <Tag color={colorMap[status] || "default"}>
+            {status}
+          </Tag>
+        );
+      },
+    },
+
     {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      sorter: (a, b) => (a.amount ?? 0) - (b.amount ?? 0),
-      render: (val: number) => (val == null ? "—" : `₹${val}`),
+
+      sorter: (a, b) =>
+        (a.amount ?? 0) - (b.amount ?? 0),
+
+      render: (val: number) =>
+        val == null
+          ? "—"
+          : `₹${val.toLocaleString()}`,
     },
-    { title: "Payment", dataIndex: "paymentMode", key: "paymentMode" },
+
     {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      title: "Invoice Date",
+      dataIndex: "invoiceDate",
+      key: "invoiceDate",
+
+      sorter: (a, b) =>
+        new Date(a.invoiceDate).getTime() -
+        new Date(b.invoiceDate).getTime(),
     },
-    { title: "City", dataIndex: "city", key: "city" },
-    { title: "State", dataIndex: "state", key: "state" },
-    { title: "Phone", dataIndex: "phone", key: "phone" },
-    { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Product", dataIndex: "product", key: "product" },
-    { title: "Category", dataIndex: "category", key: "category" },
-    { title: "Quantity", dataIndex: "quantity", key: "quantity" },
-    { title: "Delivery", dataIndex: "deliveryPartner", key: "deliveryPartner" },
+
     {
-      title: "Rating",
-      dataIndex: "rating",
-      key: "rating",
-      sorter: (a, b) => (a.rating ?? 0) - (b.rating ?? 0),
+      title: "Due Date",
+      dataIndex: "dueDate",
+      key: "dueDate",
+    },
+
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+    },
+
+    {
+      title: "Invoice Type",
+      dataIndex: "invoiceType",
+      key: "invoiceType",
+    },
+
+    {
+      title: "Risk Score",
+      dataIndex: "riskScore",
+      key: "riskScore",
+
+      sorter: (a, b) =>
+        (a.riskScore ?? 0) -
+        (b.riskScore ?? 0),
+
+      render: (score: number) => {
+        let color = "green";
+
+        if (score > 70) {
+          color = "red";
+        } else if (score > 40) {
+          color = "orange";
+        }
+
+        return (
+          <Tag color={color}>
+            {score}
+          </Tag>
+        );
+      },
+    },
+
+    {
+      title: "Duplicate %",
+      dataIndex: "duplicateProbability",
+      key: "duplicateProbability",
+
+      render: (val: number) => (
+        <Tag color={val > 70 ? "red" : "blue"}>
+          {val}%
+        </Tag>
+      ),
+    },
+
+    {
+      title: "Payment",
+      dataIndex: "paymentMode",
+      key: "paymentMode",
+    },
+
+    {
+      title: "City",
+      dataIndex: "city",
+      key: "city",
+    },
+
+    {
+      title: "State",
+      dataIndex: "state",
+      key: "state",
+    },
+
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
   ];
 
-  const defaultSelected = allColumns.slice(0, 7).map((c) => String(c.key));
-  const [selectedCols, setSelectedCols] = useState<string[]>(defaultSelected);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempSelected, setTempSelected] = useState<string[]>(selectedCols);
+  const defaultSelected = allColumns
+    .slice(0, 8)
+    .map((c) => String(c.key));
+
+  const [selectedCols, setSelectedCols] =
+    useState<string[]>(defaultSelected);
+
+  const [isModalOpen, setIsModalOpen] =
+    useState(false);
+
+  const [tempSelected, setTempSelected] =
+    useState<string[]>(selectedCols);
+
   const [search, setSearch] = useState("");
 
   const filteredColumns = useMemo(
-    () => allColumns.filter((col) => selectedCols.includes(String(col.key))),
+    () =>
+      allColumns.filter((col) =>
+        selectedCols.includes(String(col.key))
+      ),
     [selectedCols]
   );
 
   const filteredData = useMemo(() => {
-    if (!search) return orders;
+    if (!search) return invoices;
+
     const s = search.toLowerCase();
-    return orders.filter((row) =>
+
+    return invoices.filter((row) =>
       Object.values(row).some((value) =>
-        value?.toString().toLowerCase().includes(s)
+        value
+          ?.toString()
+          .toLowerCase()
+          .includes(s)
       )
     );
-  }, [orders, search]);
+  }, [invoices, search]);
 
   const openColumnsModal = () => {
     setTempSelected(selectedCols);
@@ -81,12 +218,18 @@ export default function OrdersTable() {
 
   const toggleColumnTemp = (key: string) => {
     setTempSelected((prev) =>
-      prev.includes(key) ? prev.filter((p) => p !== key) : [...prev, key]
+      prev.includes(key)
+        ? prev.filter((p) => p !== key)
+        : [...prev, key]
     );
   };
 
-  const setDefault7 = () => {
-    setTempSelected(allColumns.slice(0, 7).map((c) => String(c.key)));
+  const setDefault8 = () => {
+    setTempSelected(
+      allColumns
+        .slice(0, 8)
+        .map((c) => String(c.key))
+    );
   };
 
   const tableProps: TableProps<Order> = {
@@ -94,7 +237,7 @@ export default function OrdersTable() {
     dataSource: filteredData,
     rowKey: "id",
     loading,
-    pagination: { pageSize: 10 },
+    pagination: { pageSize: 8 },
     scroll: { x: "max-content" },
   };
 
@@ -109,25 +252,31 @@ export default function OrdersTable() {
           marginBottom: 16,
         }}
       >
-        <div style={{ width: 260 }}>
+        <div style={{ width: 300 }}>
           <Input.Search
-            placeholder="Search orders..."
+            placeholder="Search invoices..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
             allowClear
             enterButton
             size="middle"
           />
         </div>
 
-        <Button icon={<SettingOutlined />} onClick={openColumnsModal}>
+        <Button
+          icon={<SettingOutlined />}
+          onClick={openColumnsModal}
+        >
           Columns
         </Button>
       </div>
 
       <Table {...tableProps} />
+
       <Modal
-        title="Select columns to display"
+        title="Select invoice columns"
         open={isModalOpen}
         onOk={applyColumns}
         onCancel={cancelModal}
@@ -142,18 +291,32 @@ export default function OrdersTable() {
             marginBottom: 12,
           }}
         >
-          <div style={{ fontSize: 14, color: "rgba(0,0,0,0.65)" }}>
-            Choose columns
+          <div
+            style={{
+              fontSize: 14,
+              color: "rgba(0,0,0,0.65)",
+            }}
+          >
+            Choose visible columns
           </div>
 
           <div>
-            <Button size="small" onClick={setDefault7} style={{ marginRight: 8 }}>
-              Default 7
+            <Button
+              size="small"
+              onClick={setDefault8}
+              style={{ marginRight: 8 }}
+            >
+              Default 8
             </Button>
+
             <Button
               size="small"
               onClick={() =>
-                setTempSelected(allColumns.map((c) => String(c.key)))
+                setTempSelected(
+                  allColumns.map((c) =>
+                    String(c.key)
+                  )
+                )
               }
             >
               Select All
@@ -163,19 +326,33 @@ export default function OrdersTable() {
 
         <Divider style={{ margin: "8px 0" }} />
 
-        <div style={{ maxHeight: 340, overflowY: "auto", paddingRight: 8 }}>
+        <div
+          style={{
+            maxHeight: 340,
+            overflowY: "auto",
+            paddingRight: 8,
+          }}
+        >
           {allColumns.map((col) => {
             const key = String(col.key);
+
             const title =
               typeof col.title === "string"
                 ? col.title
                 : String(col.key);
 
             return (
-              <div key={key} style={{ marginBottom: 8 }}>
+              <div
+                key={key}
+                style={{ marginBottom: 8 }}
+              >
                 <Checkbox
-                  checked={tempSelected.includes(key)}
-                  onChange={() => toggleColumnTemp(key)}
+                  checked={tempSelected.includes(
+                    key
+                  )}
+                  onChange={() =>
+                    toggleColumnTemp(key)
+                  }
                 >
                   {title}
                 </Checkbox>

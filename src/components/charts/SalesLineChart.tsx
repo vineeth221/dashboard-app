@@ -1,58 +1,42 @@
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
-
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
+  Legend,
 } from "recharts";
 
+const data = [
+  { month: "Jan", total: 6.5, paid: 5.2, pending: 2.1 },
+  { month: "Feb", total: 8.4, paid: 6.8, pending: 4.5 },
+  { month: "Mar", total: 7.9, paid: 4.2, pending: 2.8 },
+  { month: "Apr", total: 8.5, paid: 5.1, pending: 3.7 },
+  { month: "May", total: 6.4, paid: 4.9, pending: 3.8 },
+  { month: "Jun", total: 10.4, paid: 6.9, pending: 4.1 },
+  { month: "Jul", total: 6.6, paid: 3.9, pending: 2.9 },
+  { month: "Aug", total: 8.5, paid: 4.0, pending: 3.1 },
+  { month: "Sep", total: 8.6, paid: 7.1, pending: 4.2 },
+  { month: "Oct", total: 10.4, paid: 7.0, pending: 5.8 },
+  { month: "Nov", total: 10.8, paid: 6.5, pending: 4.7 },
+  { month: "Dec", total: 8.5, paid: 6.8, pending: 4.1 },
+];
+
 export default function SalesLineChart() {
-  const orders = useSelector((state: RootState) => state.order.data);
-
-  const chartData = useMemo(() => {
-    const totals: Record<string, number> = {};
-
-    for (const o of orders) {
-      const d = new Date(o.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      totals[key] = (totals[key] || 0) + (o.amount || 0);
-    }
-
-    return Object.keys(totals)
-      .map((key) => ({
-        month: key,
-        revenue: totals[key],
-      }))
-      .sort((a, b) => a.month.localeCompare(b.month));
-  }, [orders]);
-
   return (
-    <div className="chart-card">
-      <h3 className="text-xl font-semibold mb-1 bg-gradient-to-r from-indigo-500 to-blue-500 text-transparent bg-clip-text">
-        Revenue (By Month)
-      </h3>
-      <p className="text-gray-500 text-sm mb-4">
-        Month-over-month revenue trend showing growth patterns and seasonal performance.
-      </p>
-
-      <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={chartData}>
-          <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="#1890ff"
-            strokeWidth={2}
-          />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip formatter={(v: number) => `₹${v}`} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height={255}>
+      <BarChart data={data}>
+        <CartesianGrid stroke="#1f2a44" vertical={false} />
+        <XAxis dataKey="month" stroke="#8b95aa" tickLine={false} axisLine={false} />
+        <YAxis stroke="#8b95aa" tickLine={false} axisLine={false} tickFormatter={(v) => `${v} Cr`} />
+        <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #273452", color: "#fff" }} />
+        <Legend />
+        <Bar dataKey="total" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+        <Bar dataKey="paid" fill="#10b981" radius={[8, 8, 0, 0]} />
+        <Bar dataKey="pending" fill="#f59e0b" radius={[8, 8, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
